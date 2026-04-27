@@ -1,0 +1,188 @@
+{
+  "name": "dokumantasyon asistani",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/fekiz12",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "dummy-repo",
+          "mode": "list",
+          "cachedResultName": "dummy-repo",
+          "cachedResultUrl": "https://github.com/fekiz12/dummy-repo"
+        },
+        "events": [
+          "pull_request"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        -112
+      ],
+      "id": "9e820815-137b-4795-aded-a00e456e9344",
+      "name": "Github Trigger",
+      "webhookId": "02f02df3-ff5d-46a9-8adf-25a2794201ee",
+      "credentials": {
+        "githubApi": {
+          "id": "mXt1N6gV3I97LtLX",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.pull_request.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3.diff"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -720,
+        -112
+      ],
+      "id": "2de999a6-1e43-48ea-8ea9-990d6ed7a21c",
+      "name": "HTTP Request",
+      "credentials": {
+        "githubApi": {
+          "id": "mXt1N6gV3I97LtLX",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-robotics-er-1.5-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-robotics-er-1.5-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Sen kıdemli bir Java Backend Mühendisisin. Görevin, sana verilen GitHub Pull Request kod değişikliklerini (diff formatında) incelemektir.\n\nKURALLAR:\n\nDiff metnindeki - (silinen) satırları sadece kodun genel amacını anlamak için oku. Hata ararken SADECE + (yeni eklenen veya değiştirilen) satırlara odaklan.\n\nAsla \"Tabii ki\", \"İşte analiz raporu\" gibi giriş veya kapanış cümleleri kullanma. Doğrudan Markdown formatındaki rapora başla.\n\nSadece şu üç kategoriye odaklan: Güvenlik, Performans (Big O, gereksiz döngüler), Clean Code.\n\nÇIKTI FORMATI:\nEğer kodda hiçbir sorun yoksa SADECE şunu yaz:\n✅ **Kod İncelemesi Tamamlandı:** Güvenlik, performans veya clean code standartları açısından kritik bir sorun bulunamadı. Elinize sağlık!\n\nEğer sorun bulursan, çıktıyı kesinlikle aşağıdaki Markdown şablonuna göre ver:\n\n🤖 AI Kod İnceleme Raporu\n📝 PR Özeti: (Bu değişikliklerin ne işe yaradığını tek cümleyle açıkla)\n\n🔍 Bulgular:\n\n🔴 Güvenlik: (Bulduğun güvenlik sorunu ve satır referansı - Sorun yoksa bu maddeyi yazma)\n\n🟠 Performans: (Bulduğun performans sorunu ve satır referansı - Sorun yoksa bu maddeyi yazma)\n\n🔵 Clean Code: (Bulduğun standart ihlali - Sorun yoksa bu maddeyi yazma)\n\nİncelenecek Kod:\n{{ $json.data }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        -112
+      ],
+      "id": "d81d0169-99fb-4c49-be42-37fdaff398d6",
+      "name": "Message a model",
+      "retryOnFail": false,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pUrzIrreJ6WCTbHj",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/fekiz12",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "dummy-repo",
+          "mode": "list",
+          "cachedResultName": "dummy-repo",
+          "cachedResultUrl": "https://github.com/fekiz12/dummy-repo"
+        },
+        "issueNumber": "={{ $('Github Trigger').item.json.body.pull_request.number }}",
+        "body": "={{ $json.content.parts[0].text }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        -112
+      ],
+      "id": "ebc55ca3-af3f-4df7-9f5f-4dd06f48d361",
+      "name": "Create a comment on an issue",
+      "webhookId": "95d76686-2913-4d4c-a015-fa76dba268b2",
+      "credentials": {
+        "githubApi": {
+          "id": "mXt1N6gV3I97LtLX",
+          "name": "GitHub account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Github Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Create a comment on an issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "5daa6c95-76ec-43ba-a072-7a1b9b3b557a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b495bbe5ad1788ec7a78950d4608ab4971c711c9388ebceea1d94f655f7b0c18"
+  },
+  "id": "P0kHS0jYZ847HKIU",
+  "tags": []
+}
