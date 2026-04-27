@@ -20,7 +20,7 @@ An automated CI/CD pipeline tool that acts as a "Senior Developer," analyzing Gi
 
 ## 📸 Showcase
 **Architecture Flow (n8n):**
-![n8n Workflow]([https://github.com/fekiz12/ai-automated-code-reviewer/blob/main/assets/Ekran%20g%C3%B6r%C3%BCnt%C3%BCs%C3%BC%202026-04-27%20152133.png])
+![n8n Workflow](https://github.com/fekiz12/ai-automated-code-reviewer/blob/main/assets/Ekran%20g%C3%B6r%C3%BCnt%C3%BCs%C3%BC%202026-04-27%20152133.png)
 
 **Automated PR Comment (Result):**
 ![GitHub Comment](https://github.com/fekiz12/ai-automated-code-reviewer/blob/main/assets/Ekran%20g%C3%B6r%C3%BCnt%C3%BCs%C3%BC%202026-04-27%20152258.png)
